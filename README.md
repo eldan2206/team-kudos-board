@@ -1,6 +1,6 @@
-# Team Kudos Board**Live demo:
+# Team Kudos Board
 
-** <https://team-kudos-board.onrender.com>
+**Live demo:** <https://team-kudos-board.onrender.com>
 *(Hosted on Render's free tier — the first request may take ~30 seconds while the service wakes up.)*
 
 A small web app for a brand-new team to publicly recognize each other.
