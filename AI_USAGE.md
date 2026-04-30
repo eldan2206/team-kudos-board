@@ -1,78 +1,110 @@
 # AI Usage Log
 
-The pre-work asks for honesty about AI tools, so here's an accurate account.
+Here's how I used AI tools on this project — what I asked Claude to do, what I changed, and where I just trusted it.
 
 ## Tool used
 
-**Claude (Anthropic)** — used as a pair-programmer to scaffold the project,
-generate boilerplate, and pressure-test design choices. I drove the
-decisions and reviewed every file before committing it.
+**Claude (Anthropic)** — used as a pair-programmer for the build, and as a
+guide when I got stuck pushing the project to GitHub.
+
+## Where I'm coming from
+
+I'm a beginner with Python, so I knew going in that I'd lean on Claude more
+for the actual code than for the design. My goal here is to be upfront
+about that rather than pretend otherwise. The thinking I put in went into
+picking the app idea, framing *why* it was the right choice for this
+brief, and making sure I could explain every part of the result.
 
 ## How I used it
 
-I used Claude in three modes:
+### 1. Picking the app idea
 
-### 1. Brainstorming the concept
-I described the brief and asked for a shortlist of "team app" ideas with
-brief pros/cons for each. We landed on a kudos board because it solves a
-real new-team problem (lowering the social cost of giving recognition) and
-is small enough to build well in a take-home timeframe.
+I shared the recruiter's brief with Claude, told it I wanted to use Python,
+and that my Python skills were beginner level. I asked for a shortlist of
+team app ideas with pros and cons.
 
-### 2. Generating the initial scaffold
-After agreeing on Flask + SQLite + server-rendered templates, I asked
-Claude to produce a first cut of `app.py`, the Jinja template, the CSS,
-and the front-end JS. I then read each file, edited the bits I wanted to
-change, and verified the app runs.
+I picked the kudos board. What sold me on it: the category system
+(Teamwork, Innovation, Helpfulness, Ownership, Learning) doubles as a
+soft way to surface each teammate's strengths over time. If you're a new
+team member trying to figure out who's good at what, the leaderboard and
+category filters basically answer "who has been recognized for X" — so
+it's both a recognition tool and a "who do I go to for help with this"
+tool. That dual purpose is what made it feel right for the "team is still
+getting to know each other" framing in the brief.
 
-### 3. Sanity-checking decisions
-I asked Claude to argue against my choices ("why might someone pick
-SQLAlchemy over raw sqlite3 here?", "what would per-user reaction de-dupe
-require?") so the README's "decisions" section reflects real tradeoffs
-rather than rationalizations.
+### 2. Generating the code
+
+After we agreed on Flask + SQLite + server-rendered templates, I asked
+Claude to produce the full app — `app.py`, the Jinja template, the CSS,
+and the front-end JS. I specifically asked for comments that explain *why*
+decisions were made, not just *what* the code does, so that when I read it
+back I'd actually learn from it.
+
+I'm not going to claim I rewrote big chunks — I didn't. I read through
+every file, asked Claude to walk me through anything I didn't follow, and
+kept the code largely as written. The comments and the "Decisions and
+tradeoffs" section in the README are what I leaned on to build a mental
+model of why the code is shaped the way it is.
+
+### 3. GitHub push troubleshooting
+
+I've uploaded individual files to GitHub before but hadn't pushed a whole
+project folder from the command line. I followed a YouTube tutorial to get
+started and ran into the credentials wall: macOS Keychain was caching old
+credentials and silently re-sending them, so even after I generated a
+fresh Personal Access Token my pushes kept failing with
+"Authentication failed."
+
+Claude walked me through, in order:
+
+- Generating a Personal Access Token with the right `repo` scope
+- Deleting the stale `github.com` entry from Keychain Access
+- Putting the token directly in the remote URL as a workaround when
+  pasting at the password prompt wasn't behaving
+- Cleaning up afterwards: removing the token from the local git config
+  and revoking the exposed token on GitHub
+
+It took several tries. I'm flagging that because the brief asks for
+honesty about *how* I work through problems, not just whether I solved
+them.
 
 ## Representative prompts
 
-These aren't verbatim transcripts but they capture the substance:
+Paraphrased from what I actually sent:
 
-- *"I'm doing a take-home for a Jr SW Dev role. Brief: build a web app for a
-  brand-new team to use. I want a Python/Flask stack and an idea that
-  shows judgment, not just CRUD. Give me five options ranked by how well
-  they fit the brief."*
-- *"Generate a Flask app for a team kudos board with these features: post a
-  kudos with from/to/category/message, see a feed, react with emojis,
-  filter by category and recipient, and a leaderboard. Use stdlib sqlite3,
-  not SQLAlchemy. Keep it in one file. Add comments that explain why
-  decisions were made, not just what the code does."*
-- *"Now the Jinja template and a clean CSS file — no framework, custom
-  properties at the top so the theme is editable in one place."*
-- *"Write the smallest amount of vanilla JS needed to make the reaction
-  buttons update the count in place. Use optimistic UI with rollback on
-  error."*
-- *"Pretend you're the reviewer. Three tough questions you'd ask me about
-  this code, and what good answers look like."*
-
-## What I changed after Claude's output
-
-- Tightened a few comments that were over-explaining obvious code
-- Added the "no per-user reaction limit" note to the README — Claude's
-  initial draft didn't flag it as a deliberate tradeoff, and I think a
-  reviewer would specifically ask
-- Adjusted the seed data so the example kudos messages sound like things a
-  real teammate would say (specific actions, not generic praise)
-- Hand-picked the category list down from a longer suggestion to five —
-  fewer categories means less decision paralysis when posting
+- *"I'm doing pre-work for a Jr SW Dev role. Brief: build a web app for a
+  brand-new team. I want to use Python and my Python skills are beginner
+  level. Give me team app ideas with pros and cons."*
+- *"Build a Flask + SQLite kudos board with from/to/category/message, a
+  feed, emoji reactions, a leaderboard, and category filters. Add comments
+  explaining why decisions were made, not just what the code does."*
+- *"Write a README that covers setup, how it works, and the decisions
+  made — written so I can speak to each one in an interview."*
+- *"Help me push this folder to GitHub from the command line — I've only
+  uploaded individual files before."*
+- *"macOS Keychain keeps rejecting my GitHub credentials even with a fresh
+  token. Help me debug step by step."*
 
 ## What I did *not* delegate
 
-- Choosing the app concept (I picked from the brainstormed list)
-- Reading and approving every file before it landed
-- Deciding the visual direction (warm cream + coral accent, soft cards)
+- Picking the app idea from the shortlist Claude brainstormed
+- Reading the README and code so I can explain the decisions out loud
 - Running the app locally and clicking through every flow
-- Writing this log
+- Writing this log (Claude helped me shape it; the substance is mine)
 
-## Reviewer note
+## What I'd want a reviewer to know
 
-If you want to pressure-test which parts I actually understand, ask me
-about: why server-rendered HTML over a SPA, why reaction counts are
-recomputed instead of cached, what happens if the `react` POST fails
-mid-flight, and what I'd do if the team grew to 100+ people.
+I'm being upfront: I'm a beginner with Python and Claude wrote most of the
+code. Where I'd push back on calling this a "tutorial follow," though, is
+that I picked the idea, framed *why* it fits the brief (the
+strengths-surfacing angle), made the call on the stack, and worked through
+the GitHub auth issues end-to-end instead of giving up. I treated Claude
+as a senior engineer pair — describe the goal and constraints, get a
+draft, read it, ask questions until I understand it, then commit. That's a
+workflow I plan to keep using as I level up.
+
+If you want to pressure-test what I actually understand, ask me about:
+why a kudos board fits a brand-new team, why server-rendered HTML over a
+SPA, what each of the three database tables is for, what happens if a
+reaction `POST` fails mid-flight, and what I'd change if 100 people used
+this.
