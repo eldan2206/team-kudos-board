@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Team Kudos Board</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <h1 class="brand">
+        <span class="brand-mark">★</span> Team Kudos Board
+      </h1>
+      <p class="tagline">Catch each other doing great things.</p>
+    </div>
+  </header>
+
+  <main class="container layout">
+    <!-- LEFT: form + feed -->
+    <section class="feed-column">
+      <article class="card form-card">
+        <h2>Send a kudos</h2>
+        <form id="kudos-form" method="POST" action="{{ url_for('create_kudos') }}">
+          <div class="form-row">
+            <label>
+              From
+              <select name="from_name" required>
+                <option value="" disabled selected>Pick a teammate…</option>
+                {% for t in teammates %}
+                  <option value="{{ t.name }}">{{ t.emoji }} {{ t.name }}</option>
+                {% endfor %}
+              </select>
+            </label>
+
+            <label>
+              To
+              <select name="to_name" required>
+                <option value="" disabled selected>Pick a teammate…</option>
+                {% for t in teammates %}
+                  <option value="{{ t.name }}">{{ t.emoji }} {{ t.name }}</option>
+                {% endfor %}
+              </select>
+            </label>
+          </div>
+
+          <label>
+            Category
+            <select name="category" required>
+              <option value="" disabled selected>Pick a category…</option>
+              {% for key, label in categories %}
+                <option value="{{ key }}">{{ label }}</option>
+              {% endfor %}
+            </select>
+          </label>
+
+          <label>
+            Message
+            <textarea name="message" rows="3" maxlength="500" required
+                      placeholder="Be specific — what did they do, and why did it matter?"></textarea>
+          </label>
+
+          <button type="submit" class="btn-primary">Post kudos</button>
+        </form>
+      </article>
+
+      <div class="filters">
+        <span class="filters-label">Filter:</span>
+        <a href="{{ url_for('index') }}"
+           class="chip {% if not active_category and not active_recipient %}chip-active{% endif %}">All</a>
+        {% for key, label in categories %}
+          <a href="{{ url_for('index', category=key) }}"
+             class="chip {% if active_category == key %}chip-active{% endif %}">{{ label }}</a>
+        {% endfor %}
+        {% if active_recipient %}
+          <span class="chip chip-active">For: {{ active_recipient }}
+            <a href="{{ url_for('index') }}" class="chip-clear" aria-label="Clear filter">×</a>
+          </span>
+        {% endif %}
+      </div>
+
+      <ul class="feed">
+        {% if not kudos %}
+          <li class="empty-state">No kudos here yet — be the first!</li>
+        {% endif %}
+
+        {% for k in kudos %}
+          <li class="card kudos" data-id="{{ k.id }}">
+            <div class="kudos-head">
+              <span class="kudos-people">
+                <strong>{{ k.from_name }}</strong>
+                <span class="arrow">→</span>
+                <strong>{{ k.to_name }}</strong>
+              </span>
+              <span class="kudos-category cat-{{ k.category }}">
+                {{ dict(categories)[k.category] }}
+              </span>
+            </div>
+
+            <p class="kudos-message">{{ k.message }}</p>
+
+            <div class="kudos-foot">
+              <div class="reactions" data-kudos-id="{{ k.id }}">
+                {% for kind in reactions %}
+                  <button type="button" class="reaction" data-kind="{{ kind }}">
+                    <span class="reaction-emoji">{{ reaction_emoji[kind] }}</span>
+                    <span class="reaction-count" data-kind-count="{{ kind }}">{{ k[kind] }}</span>
+                  </button>
+                {% endfor %}
+              </div>
+              <time class="kudos-time" datetime="{{ k.created_at }}">{{ k.created_at[:10] }}</time>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <!-- RIGHT: leaderboard -->
+    <aside class="sidebar">
+      <article class="card">
+        <h2>Top recognized</h2>
+        {% if leaderboard %}
+          <ol class="leaderboard">
+            {% for entry in leaderboard %}
+              <li>
+                <a href="{{ url_for('index', to=entry.name) }}" class="leader-link">
+                  <span class="leader-emoji">{{ entry.emoji or '🙂' }}</span>
+                  <span class="leader-name">{{ entry.name }}</span>
+                  <span class="leader-count">{{ entry.kudos_count }}</span>
+                </a>
+              </li>
+            {% endfor %}
+          </ol>
+        {% else %}
+          <p class="muted">No kudos yet. Get recognizing!</p>
+        {% endif %}
+      </article>
+
+      <article class="card muted-card">
+        <h2>Why this exists</h2>
+        <p>
+          A new team is just a group of strangers until people start
+          appreciating each other out loud. This board makes that easy:
+          pick a teammate, pick a category, say something specific.
+        </p>
+      </article>
+    </aside>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      Built with Flask + SQLite. Source &amp; notes in the README.
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
