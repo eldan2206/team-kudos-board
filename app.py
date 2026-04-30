@@ -329,12 +329,12 @@ def api_kudos():
 # Entry point
 # ---------------------------------------------------------------------------
 
-# Initialize the database when this module is imported. gunicorn (used in
-   # production) imports this file but doesn't execute the __main__ block, so
-   # the call has to live here. init_db() is idempotent — safe to call on
-   # every startup.
-   init_db()
+# Initialize the database when this module is imported. gunicorn imports
+# this file but doesn't execute the __main__ block below, so the call has
+# to live at module scope. init_db() is idempotent — safe to call on every
+# startup.
+init_db()
 
-   if __name__ == "__main__":
-       # debug=True is fine for local dev; gunicorn ignores this block.
-       app.run(host="127.0.0.1", port=int(os.environ.get("PORT", 5000)), debug=True)
+
+if __name__ == "__main__":
+    app.run(host="127.0.0.1", port=int(os.environ.get("PORT", 5000)), debug=True)
