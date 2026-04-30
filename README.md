@@ -1,4 +1,7 @@
-# Team Kudos Board
+# Team Kudos Board**Live demo:
+
+** <https://team-kudos-board.onrender.com>
+*(Hosted on Render's free tier — the first request may take ~30 seconds while the service wakes up.)*
 
 A small web app for a brand-new team to publicly recognize each other.
 Pick a teammate, pick a category, write a short message — and react to other
